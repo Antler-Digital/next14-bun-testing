@@ -1,91 +1,114 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { useMemo, useState } from "react";
+import { generateColor } from "../lib/generate-color";
+import { Tickers } from "../../types";
+import { isTicker } from "../lib/type-helpers";
 
 export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
+  const [selectedTicker, setSelectedTicker] = useState<Tickers>("AAPL");
+  const [textColor, setTextColor] = useState("gray");
+
+  const tickerMap = useMemo(
+    () => ({
+      AAPL: (
+        <p style={{ color: textColor }} data-testid="aapl">
+          An apple a day keeps the doctor away
         </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      ),
+      GOOGL: (
+        <p style={{ color: textColor }} data-testid="googl">
+          Google it
+        </p>
+      ),
+      AMZN: (
+        <p style={{ color: textColor }} data-testid="amzn">
+          Amazing
+        </p>
+      ),
+    }),
+    [textColor]
+  );
+
+  return (
+    <main className="p-20 flex gap-20 min-h-screen h-full bg-zinc-800 items-center justify-center">
+      <section className="p-10 min-h-80 bg-emerald-400 shadow-lg w-1/2">
+        <div className="flex gap-x-20 h-full">
+          <div className="w-1/2 space-y-2">
+            <div className="w-full">
+              <h2 className="font-bold text-2xl">Input</h2>
+              <label htmlFor="ticker">
+                <span>Ticker</span>
+                {/* options */}
+                <select
+                  name="ticker"
+                  id="ticker"
+                  className="p-2 w-full"
+                  data-testid="select"
+                  onChange={(e) => {
+                    if (isTicker(e.target.value)) {
+                      setSelectedTicker(e.target.value);
+                    }
+                  }}
+                >
+                  <option value="default" disabled>
+                    Select one
+                  </option>
+                  <option value="AAPL" data-testid="select-option">
+                    AAPL
+                  </option>
+                  <option value="GOOGL" data-testid="select-option">
+                    GOOGL
+                  </option>
+                  <option value="AMZN" data-testid="select-option">
+                    AMZN
+                  </option>
+                </select>
+              </label>
+            </div>
+            <div className="w-full">
+              <label htmlFor="">
+                <span>Change color</span>
+                <div className="w-full flex gap-x-4">
+                  <button
+                    type="button"
+                    className="bg-blue-500 p-2 text-white rounded-md w-full"
+                    onClick={() => {
+                      const randomColor = generateColor("text");
+                      setTextColor(randomColor);
+                    }}
+                  >
+                    By name
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-500 p-2 text-white rounded-md w-full"
+                    onClick={() => {
+                      const randomColor = generateColor("hex");
+                      setTextColor(randomColor);
+                    }}
+                  >
+                    By hex
+                  </button>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div className="w-1/2 space-y-2">
+            <h2 className="font-bold text-2xl">Result</h2>
+            {/* result */}
+            <div className="text-4xl flex flex-col justify-between h-full">
+              <div>{tickerMap[selectedTicker]}</div>
+              <div className="text-lg">
+                Color:{" "}
+                <span className="font-bold" data-testid="text-color">
+                  {textColor}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </section>
     </main>
-  )
+  );
 }
