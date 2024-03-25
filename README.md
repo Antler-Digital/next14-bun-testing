@@ -1,3 +1,5 @@
+> Read the guide here: [How to Test Your NextJS 14 Applications with Bun](https://antler.digital/blog/how-to-test-your-nextjs-14-applications-with-bun)
+
 ## Introduction
 
 - BunJS + Next14
